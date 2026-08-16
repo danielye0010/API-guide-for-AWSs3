@@ -1,37 +1,82 @@
-## What is boto3?
-boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK) for Python. It allows Python developers to write software that makes use of services like Amazon S3, EC2, DynamoDB, and more. boto3 makes it easy to integrate your Python application, library, or script with AWS services. It provides an object-oriented API as well as low-level access to AWS services.
+# Python S3 Quickstart with boto3
 
-## How to Download a File from AWS S3 using Python
-This tutorial will guide you through the process of downloading a file from an AWS S3 bucket using Python. 
-Prerequisites
-Ask for Access key ID and Secret access key from UW-Madison Research drive team, set them as environmental variables for security.
-### On macOS (or Linux)
-1.	Open Terminal.
-2.	Edit your shell profile file. This file could be one of several, depending on your shell. Common files include ~/.bash_profile, ~/.bashrc, ~/.zshrc, etc. If you're using Bash, you'll likely edit ~/.bash_profile or ~/.bashrc. If you're using Zsh (the default on newer versions of macOS), you'll edit ~/.zshrc.
-3.	Add your S3 credentials to the file. Open the file in a text editor (you can use nano or vim directly from the terminal). Then, add the following lines at the end of the file:
-   
-```
-export S3_ACCESS_KEY_ID='your_access_key_id_here'
-export S3_SECRET_ACCESS_KEY='your_secret_access_key_here'
-Replace your_access_key_id_here and your_secret_access_key_here with your actual AWS access key ID and secret access key.
-```
-4.	Save and close the file. If you're using nano, you can do this by pressing Ctrl + O, Enter, and then Ctrl + X. In vim, you can do this by typing :wq and then pressing Enter.
+A compact reference for common Amazon S3 and S3-compatible storage operations in Python using **boto3**.
 
-5.	Reload the profile. To make the changes effective, you can either close and reopen your terminal or source the profile file with a command like source ~/.bash_profile or source ~/.zshrc, depending on which file you edited.
+The helper module covers:
 
-### On Windows
-1.	Open System Properties. Right-click on the Start button, select System, then click on Advanced system settings on the left sidebar.
-2.	Environment Variables. In the System Properties window, go to the Advanced tab and click on the Environment Variables button near the bottom.
-3.	Add new user variables. In the Environment Variables window, under the User variables section, click New to create a new variable. Create two variables:
-```
-Variable name: S3_ACCESS_KEY_ID
-Variable value: your_access_key_id_here
-Variable name: S3_SECRET_ACCESS_KEY
-Variable value: your_secret_access_key_here
-Replace your_access_key_id_here and your_secret_access_key_here with your actual credentials.
-```
-4.	OK and Apply. After adding both variables, click OK on all open dialog boxes to apply these changes.
-5.	Restart any open command prompts or applications. To ensure these environment variables are recognized, you may need to restart any command prompts, PowerShell windows, or applications where you intend to use these credentials.
-By setting these environment variables, you avoid hardcoding your credentials in your scripts, enhancing security. 
+- creating an S3 client
+- downloading one or many objects
+- uploading one or many files
+- listing buckets
+- listing objects with pagination
+- creating buckets
+- deleting objects
+- deleting empty buckets
 
-### More functions check the .py file for detail
+## Install
+
+```bash
+pip install -r requirements.txt
+```
+
+## Authentication
+
+The code uses boto3's normal AWS credential chain rather than hardcoding credentials in source code. Common options include:
+
+- AWS CLI configuration (`aws configure`)
+- environment variables such as `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+- IAM roles when running on AWS infrastructure
+
+Do **not** commit credentials to Git.
+
+## S3-compatible endpoints
+
+For standard AWS S3, no endpoint configuration is needed.
+
+For another S3-compatible service, set:
+
+```bash
+export S3_ENDPOINT_URL="https://your-s3-endpoint.example.com"
+```
+
+On Windows PowerShell:
+
+```powershell
+$env:S3_ENDPOINT_URL="https://your-s3-endpoint.example.com"
+```
+
+## Usage
+
+```python
+from s3_api_guide import download_file, upload_file, list_objects
+
+# Download
+ download_file(
+    "my-bucket",
+    "datasets/example.csv",
+    "downloads/example.csv",
+)
+
+# Upload
+upload_file(
+    "results/output.csv",
+    "my-bucket",
+    "results/output.csv",
+)
+
+# List objects
+for key in list_objects("my-bucket", prefix="datasets/"):
+    print(key)
+```
+
+## Run directly
+
+```bash
+python s3_api_guide.py
+```
+
+This prints the buckets visible to the active boto3 credentials.
+
+## Notes
+
+`delete_bucket()` deletes an **empty** bucket. Delete contained objects first when required by the storage service.
