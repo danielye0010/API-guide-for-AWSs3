@@ -51,7 +51,7 @@ $env:S3_ENDPOINT_URL="https://your-s3-endpoint.example.com"
 from s3_api_guide import download_file, upload_file, list_objects
 
 # Download
- download_file(
+download_file(
     "my-bucket",
     "datasets/example.csv",
     "downloads/example.csv",
